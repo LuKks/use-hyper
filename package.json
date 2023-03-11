@@ -1,0 +1,26 @@
+{
+  "name": "use-hyper",
+  "version": "0.0.0",
+  "description": "React hooks for the hypercore-protocol stack",
+  "main": "",
+  "scripts": {
+    "test": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LuKks/use-hyper.git"
+  },
+  "author": "Lucas Barrena (LuKks)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LuKks/use-hyper/issues"
+  },
+  "homepage": "https://github.com/LuKks/use-hyper",
+  "devDependencies": {
+    "standard": "^17.0.0"
+  },
+  "dependencies": {
+    "b4a": "^1.6.2",
+    "sodium-universal": "^4.0.0"
+  }
+}
