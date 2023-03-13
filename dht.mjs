@@ -13,10 +13,10 @@ export default function useDHT () {
   useEffect(() => {
     if (primaryKey === null) return
 
+    const keyPair = DHT.keyPair(primaryKey)
+
     const ws = new window.WebSocket('wss://dht1-relay.leet.ar:49443') // + add more relays
-    const dht = new DHT(new Stream(true, ws), {
-      keyPair: DHT.keyPair(b4a.from(primaryKey, 'hex'))
-    })
+    const dht = new DHT(new Stream(true, ws), { keyPair })
 
     setDHT(dht)
 

@@ -13,7 +13,7 @@ export default function useKey () {
       window.localStorage.setItem('primary-key', primaryKey)
     }
 
-    setKey(b4a.from(primaryKey))
+    setKey(b4a.from(primaryKey, 'hex'))
   }, [])
 
   return [key]
