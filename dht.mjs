@@ -18,7 +18,7 @@ export default function useDHT () {
 
     const ws = new window.WebSocket('wss://dht1-relay.leet.ar:49443') // + add more relays
     const dht = new DHT(new Stream(true, ws), {
-      keyPair: keyPair
+      keyPair
     })
 
     setDHT(dht)
