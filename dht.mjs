@@ -13,8 +13,8 @@ export default function useDHT () {
   useEffect(() => {
     if (primaryKey === null) return
 
-    const secretKey = b4a.from(primaryKey, 'hex') // creates a secret key based on the primary key saved on windows.localStorage
-    const keyPair = DHT.keyPair(secretKey) // creates a public key pair to the previously created secret key {publicKey: Uint8Array(32), secretKey: Uint8Array(64)}
+    const seed = b4a.from(primaryKey, 'hex')
+    const keyPair = DHT.keyPair(seed)
 
     const ws = new window.WebSocket('wss://dht1-relay.leet.ar:49443') // + add more relays
     const dht = new DHT(new Stream(true, ws), {
