@@ -13,7 +13,9 @@ export default function useKey () {
       window.localStorage.setItem('primary-key', primaryKey)
     }
 
-    setKey(b4a.from(primaryKey))
+    const formatedKey = b4a.from(primaryKey) // converts the primary key to Uint8Array
+
+    setKey(formatedKey)
   }, [])
 
   return [key]
