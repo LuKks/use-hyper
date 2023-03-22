@@ -16,6 +16,9 @@ Every hook requires the related library installed:
 - `useDHT` depends on `@hyperswarm/dht-relay`.
 - `useSwarm` depends on `hyperswarm`.
 
+If you import `useSwarm` then install this specific branch:
+`npm i holepunchto/hyperswarm#add-swarm-session`
+
 ```javascript
 import { useCore, useCoreEvent, useCoreWatch } from 'use-hyper/core'
 import useDHT from 'use-hyper/dht'
