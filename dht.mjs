@@ -2,29 +2,28 @@ import { useEffect, useState } from 'react'
 import DHT from '@hyperswarm/dht-relay'
 import Stream from '@hyperswarm/dht-relay/ws'
 import b4a from 'b4a'
-import useKey from './key.mjs'
+import primaryKey from './key.mjs'
 
-// + probably a global WebSocket instance?
+const keyPair = DHT.keyPair(primaryKey)
+
+// + add more relays
+// + should detect WebSocket errors, etc to retry a different relay
+
+const ws = new window.WebSocket('wss://dht1-relay.leet.ar:49443')
+const stream = new Stream(true, ws)
+
+const hyperdht = new DHT(stream, { keyPair })
 
 export default function useDHT () {
-  const [primaryKey] = useKey()
   const [dht, setDHT] = useState(null)
 
   useEffect(() => {
-    if (primaryKey === null) return
-
-    const keyPair = DHT.keyPair(primaryKey)
-
-    const ws = new window.WebSocket('wss://dht1-relay.leet.ar:49443') // + add more relays
-    const dht = new DHT(new Stream(true, ws), { keyPair })
-
-    setDHT(dht)
+    setDHT(hyperdht)
 
     return () => {
-      dht.destroy()
       setDHT(null)
     }
-  }, [primaryKey])
+  }, [])
 
   return [dht]
 }

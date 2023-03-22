@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react'
 import Hyperswarm from 'hyperswarm'
 
+let hyperswarm = null
+
 export default function useSwarm (dht) {
   const [swarm, setSwarm] = useState(null)
 
   useEffect(() => {
     if (dht === null) return
 
-    const swarm = new Hyperswarm({ dht, keyPair: dht.defaultKeyPair })
+    if (hyperswarm === null) hyperswarm = new Hyperswarm({ dht, keyPair: dht.defaultKeyPair })
 
-    setSwarm(swarm)
+    const session = hyperswarm.session({ keyPair: dht.defaultKeyPair })
+    setSwarm(session)
 
     return () => {
-      swarm.destroy()
-      for (const socket of swarm.connections) socket.destroy()
+      session.destroy() // Run on background
+      for (const socket of session.connections) socket.destroy()
+
+      setSwarm(null)
     }
   }, [dht])
 

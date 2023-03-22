@@ -17,18 +17,23 @@ Every hook requires the related library installed:
 - `useSwarm` depends on `hyperswarm`.
 
 ```javascript
-import useKey from 'use-hyper/key'
-import useCore from 'use-hyper/core'
+import { useCore, useCoreEvent, useCoreWatch } from 'use-hyper/core'
 import useDHT from 'use-hyper/dht'
 import useSwarm from 'use-hyper/swarm'
 
 function App () {
-  const [core, coreOptions, setCoreOptions] = useCore(RAM)
+  const [core, setCoreOptions] = useCore(RAM)
+
+  const coreOpened = useCoreEvent(core, 'ready', () => {})
+  const coreClosed = useCoreEvent(core, 'close', () => {})
+  const coreAppend = useCoreEvent(core, 'append', () => {})
+
+  const coreChanged = useCoreWatch(core, () => {}) // Trigger re-renders when core changes
 
   const [writableCore] = useCore(RAM)
   const [readableCore] = useCore(RAM, publicKey)
 
-  const [dht] = useDHT()
+  const [dht] = useDHT() // Global DHT instance by default for now
   const [swarm] = useSwarm(dht)
 
   // ...
