@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import DHT from '@hyperswarm/dht-relay'
 import Stream from '@hyperswarm/dht-relay/ws'
-import b4a from 'b4a'
 import primaryKey from './key.mjs'
 
 const keyPair = DHT.keyPair(primaryKey)

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import b4a from 'b4a'
 import sodium from 'sodium-universal'
 
