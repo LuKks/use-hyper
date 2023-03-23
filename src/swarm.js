@@ -54,24 +54,21 @@ export const useReplicate = (core, enable = true, deps = []) => {
   useEffect(() => {
     if (!enable || !swarm || !ready || core?.closed) return
 
+    const session = swarm.session({ keyPair: swarm.keyPair })
+
     const onConnection = socket => {
       core.replicate(socket)
     }
 
     const done = core.findingPeers()
-    swarm.on('connection', onConnection)
-    swarm.join(core.discoveryKey, { server: false, client: true })
-    swarm.flush().then(done, done)
-
-    for (const socket of swarm.connections) {
-      core.replicate(socket)
-    }
+    session.on('connection', onConnection)
+    session.join(core.discoveryKey, { server: false, client: true })
+    session.flush().then(done, done)
 
     return () => {
-      swarm.off('connection', onConnection)
-      swarm.leave(core.discoveryKey)
-
-      for (const socket of swarm.connections) socket.destroy()
+      session.off('connection', onConnection)
+      session.leave(core.discoveryKey)
+      session.destroy().catch(safetyCatch) // Run on background
     }
   }, [swarm, core, ready, enable, ...deps])
 
