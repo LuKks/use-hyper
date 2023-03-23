@@ -2,7 +2,7 @@
   "name": "use-hyper",
   "version": "0.0.3",
   "description": "React hooks for the hypercore-protocol stack",
-  "main": "",
+  "main": "./src/index.js",
   "scripts": {
     "test": "standard"
   },
@@ -16,11 +16,15 @@
     "url": "https://github.com/LuKks/use-hyper/issues"
   },
   "homepage": "https://github.com/LuKks/use-hyper",
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
   "devDependencies": {
     "standard": "^17.0.0"
   },
   "dependencies": {
-    "b4a": "^1.6.2",
+    "b4a": "^1.6.3",
     "sodium-universal": "^4.0.0"
   }
 }
