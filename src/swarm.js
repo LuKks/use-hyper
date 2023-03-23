@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext, createContext } from 'react'
+import safetyCatch from 'safety-catch'
 import Hyperswarm from 'hyperswarm'
 import { useDHT } from './dht.js'
 
@@ -7,7 +8,6 @@ const SwarmContext = createContext()
 export const Swarm = ({ children, ...options }) => {
   const { dht } = useDHT()
   const [swarm, setSwarm] = useState(null)
-  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     if (!dht) return
@@ -18,21 +18,16 @@ export const Swarm = ({ children, ...options }) => {
       dht
     })
 
-    const onReady = () => setReady(true)
-    swarm.on('ready', onReady)
     setSwarm(swarm)
 
     return () => {
-      swarm.off('ready', onReady)
-      swarm.destroy()
-      setReady(false)
-      for (const socket of swarm.connections) socket.destroy()
+      swarm.destroy().catch(safetyCatch) // Run on background
     }
   }, [dht])
 
   return React.createElement(
     SwarmContext.Provider,
-    { value: { swarm, ready } },
+    { value: { swarm } },
     children
   )
 }

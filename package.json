@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "b4a": "^1.6.3",
+    "safety-catch": "^1.0.2",
     "sodium-universal": "^4.0.0"
   }
 }

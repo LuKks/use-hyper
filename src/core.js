@@ -5,11 +5,11 @@ import React, {
   useContext,
   createContext
 } from 'react'
+import safetyCatch from 'safety-catch'
 import Hypercore from 'hypercore'
 
 const CoreContext = createContext()
 
-const noop = () => {}
 const EVENTS = [
   'ready',
   'append',
@@ -33,7 +33,7 @@ export const Core = ({ children, storage, coreKey, ...options }) => {
     core.ready().then(() => setReady(true))
 
     return () => {
-      core.close().catch(noop)
+      core.close().catch(safetyCatch)
       setCore(null)
       setReady(false)
     }
