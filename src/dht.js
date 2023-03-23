@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, createContext } from 'react'
 import DHTRelay from '@hyperswarm/dht-relay'
 import Stream from '@hyperswarm/dht-relay/ws'
+import safetyCatch from 'safety-catch'
 import { primaryKey } from './key.js'
 
 // + add more relays
@@ -25,9 +26,7 @@ export const DHT = ({ children, url, stream, keyPair, ...options }) => {
     const dht = new DHTRelay(stream, { keyPair, ...options })
     setDHT(dht)
 
-    return () => {
-      if (ws) ws.close()
-    }
+    return () => dht.destroy().catch(safetyCatch)
   }, [stream, keyPair])
 
   return React.createElement(
