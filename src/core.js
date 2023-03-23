@@ -22,9 +22,11 @@ const EVENTS = [
 export const Core = ({ children, storage, coreKey, ...options }) => {
   const [core, setCore] = useState(null)
   const [ready, setReady] = useState(false)
+  const deps = Object.values(options)
 
   useEffect(() => {
     if (!storage) return
+
     const core = new Hypercore(storage, coreKey, options)
     setCore(core)
 
@@ -32,8 +34,12 @@ export const Core = ({ children, storage, coreKey, ...options }) => {
 
     return () => {
       core.close().catch(noop)
+      setCore(null)
+      setReady(false)
     }
-  }, [storage, coreKey])
+  }, [storage, coreKey, ...deps])
+
+  if (!core || !ready) return null
 
   return React.createElement(
     CoreContext.Provider,
@@ -53,7 +59,7 @@ export const useCore = () => {
 }
 
 export const useCoreEvent = (event, cb) => {
-  const { core } = useCore()
+  const { core, ready } = useCore()
   const fn = useRef(cb)
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export const useCoreEvent = (event, cb) => {
   }, [cb])
 
   useEffect(() => {
-    if (!core?.opened || core?.closed) return
+    if (!ready || core?.closed) return
 
     const listener = event => fn.current(event)
     core.on(event, listener)
@@ -69,7 +75,7 @@ export const useCoreEvent = (event, cb) => {
     return () => {
       core.off(event, listener)
     }
-  }, [event, core])
+  }, [ready, event, core])
 
   return { core }
 }

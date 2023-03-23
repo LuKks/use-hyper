@@ -25,15 +25,14 @@ export const Swarm = ({ children, ...options }) => {
     return () => {
       swarm.off('ready', onReady)
       swarm.destroy()
+      setReady(false)
       for (const socket of swarm.connections) socket.destroy()
     }
   }, [dht])
 
   return React.createElement(
     SwarmContext.Provider,
-    {
-      value: { swarm, ready }
-    },
+    { value: { swarm, ready } },
     children
   )
 }
@@ -54,17 +53,17 @@ export const useReplicate = (core, enable = true, deps = []) => {
 
   useEffect(() => {
     if (core) core.ready().then(() => setReady(true))
+    return () => setReady(false)
   }, [core])
 
   useEffect(() => {
     if (!enable || !swarm || !ready || core?.closed) return
 
-    const done = core.findingPeers()
-
     const onConnection = socket => {
       core.replicate(socket)
     }
 
+    const done = core.findingPeers()
     swarm.on('connection', onConnection)
     swarm.join(core.discoveryKey, { server: false, client: true })
     swarm.flush().then(done, done)
