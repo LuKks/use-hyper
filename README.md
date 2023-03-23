@@ -38,7 +38,7 @@ const Child = () => {
 
 const App = () => {
   return (
-    <Core storage={RAM} coreKey={key}>
+    <Core storage={RAM} publicKey={key}>
       <Child />
     </Core>
   )

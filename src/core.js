@@ -19,7 +19,7 @@ const EVENTS = [
   'truncate'
 ]
 
-export const Core = ({ children, storage, coreKey, ...options }) => {
+export const Core = ({ children, storage, publicKey, ...options }) => {
   const [core, setCore] = useState(null)
   const [ready, setReady] = useState(false)
   const deps = Object.values(options)
@@ -27,7 +27,7 @@ export const Core = ({ children, storage, coreKey, ...options }) => {
   useEffect(() => {
     if (!storage) return
 
-    const core = new Hypercore(storage, coreKey, options)
+    const core = new Hypercore(storage, publicKey, options)
     setCore(core)
 
     core.ready().then(() => setReady(true))
@@ -37,7 +37,7 @@ export const Core = ({ children, storage, coreKey, ...options }) => {
       setCore(null)
       setReady(false)
     }
-  }, [storage, coreKey, ...deps])
+  }, [storage, publicKey, ...deps])
 
   if (!core || !ready) return null
 
