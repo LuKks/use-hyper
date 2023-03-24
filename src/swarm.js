@@ -43,34 +43,35 @@ export const useSwarm = () => {
 }
 
 export const useReplicate = (core, enable = true, deps = []) => {
-  const [ready, setReady] = useState(false)
   const { swarm } = useSwarm()
 
   useEffect(() => {
-    if (core) core.ready().then(() => setReady(true))
-    return () => setReady(false)
-  }, [core])
+    if (!enable || !swarm || core?.closed) return
 
-  useEffect(() => {
-    if (!enable || !swarm || !ready || core?.closed) return
-
-    const session = swarm.session({ keyPair: swarm.keyPair })
+    let session = null
+    let mounted = true
 
     const onConnection = socket => {
       core.replicate(socket)
     }
 
-    const done = core.findingPeers()
-    session.on('connection', onConnection)
-    session.join(core.discoveryKey, { server: false, client: true })
-    session.flush().then(done, done)
+    core.ready().then(() => {
+      if (!mounted) return
+      session = swarm.session({ keyPair: swarm.keyPair })
+      const done = core.findingPeers()
+      session.on('connection', onConnection)
+      session.join(core.discoveryKey, { server: false, client: true })
+      session.flush().then(done, done)
+    })
 
     return () => {
+      mounted = false
+      if (!session) return
       session.off('connection', onConnection)
       session.leave(core.discoveryKey)
       session.destroy().catch(safetyCatch) // Run on background
     }
-  }, [swarm, core, ready, enable, ...deps])
+  }, [swarm, core, enable, ...deps])
 
   return { swarm, core }
 }
