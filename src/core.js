@@ -44,7 +44,7 @@ export const useCore = () => {
   const context = useContext(CoreContext)
 
   if (context === undefined) {
-    throw new Error('useCore must be used within a Core component llll')
+    throw new Error('useCore must be used within a Core component')
   }
 
   return context
