@@ -10,7 +10,7 @@ if (primaryKey === null) {
 
 primaryKey = b4a.from(primaryKey, 'hex')
 
-export default primaryKey
+export { primaryKey }
 
 function randomBytes (n) {
   const buf = b4a.allocUnsafe(n)
