@@ -27,8 +27,12 @@ export const Core = ({ children, storage, publicKey, ...options }) => {
     if (!storage) return
 
     const core = new Hypercore(storage, publicKey, options)
-    core.once('ready', () => setCore(core))
-    return () => core.close().catch(safetyCatch)
+    const onReady = () => setCore(core)
+    core.once('ready', onReady)
+    return () => {
+      core.off('ready', onReady)
+      core.close().catch(safetyCatch)
+    }
   }, [storage, publicKey, ...deps])
 
   if (!core) return null
