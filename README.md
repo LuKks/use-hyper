@@ -21,7 +21,7 @@ Every hook requires the related library installed:
 If you import `useSwarm` then install this specific branch:\
 `npm i holepunchto/hyperswarm#add-swarm-session`
 
-```javascript
+```jsx
 import { useCore, useCoreWatch, useCoreEvent } from 'use-hyper/core'
 import { DHT } from 'use-hyper/dht'
 import { Swarm, useReplicate } from 'use-hyper/swarm'
@@ -29,7 +29,10 @@ import RAM from 'random-access-memory'
 
 const Child = () => {
   const { core } = useCore() // Gets core from context
+
   const { onwatch } = useCoreWatch() // Triggers re-render when core changes
+  const { onwatch: onappend } = useCoreWatch(['append']) // Same as above
+
   useCoreEvent('append', () => console.log('on event', core.length))
 
   useReplicate(core)
