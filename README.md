@@ -8,7 +8,7 @@ React hooks for the hypercore-protocol stack
 npm i use-hyper
 ```
 
-Warning: this is experimental, and API might change until v1.
+Warning: this is experimental, and API might unexpectedly change until v1.
 
 ## Usage
 
@@ -18,22 +18,32 @@ Every hook requires the related library installed:
 - `useDHT` depends on `@hyperswarm/dht-relay`.
 - `useSwarm` depends on `hyperswarm`.
 
-If you import `useSwarm` then install this specific branch:
+If you import `useSwarm` then install this specific branch:\
 `npm i holepunchto/hyperswarm#add-swarm-session`
 
 ```javascript
-import { useCore, useCoreEvent, useCoreWatch } from 'use-hyper'
-import useDHT from 'use-hyper/dht'
-import useSwarm from 'use-hyper/swarm'
+import { useCore, useCoreWatch, useCoreEvent } from 'use-hyper/core'
+import { DHT } from 'use-hyper/dht'
+import { Swarm, useReplicate } from 'use-hyper/swarm'
+import RAM from 'random-access-memory'
 
 const Child = () => {
-  const { core } = useCore()
+  const { core } = useCore() // Gets core from context
+  const { onwatch } = useCoreWatch() // Triggers re-render when core changes
+  useCoreEvent('append', () => console.log('on event', core.length))
 
-  const { core } = useCoreWatch(['append', 'close']) // updates on append and close events
+  useReplicate(core)
 
-  const { core } = useCoreEvent('append', () => {
-    console.log(core) // do something
-  })
+  const DHT = useDHT() // Gets DHT from the context
+  const swarm = useSwarm() // Same, from context
+
+  return (
+    <div>
+      ID {core.id}<br />
+      Length {core.length}<br />
+      Peers {core.peers.length}
+    </div>
+  )
 }
 
 const App = () => {

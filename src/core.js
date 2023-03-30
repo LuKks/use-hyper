@@ -1,12 +1,6 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useContext,
-  createContext
-} from 'react'
-import safetyCatch from 'safety-catch'
+import React, { useEffect, useState, useRef, useContext, createContext } from 'react'
 import Hypercore from 'hypercore'
+import safetyCatch from 'safety-catch'
 
 const CoreContext = createContext()
 
@@ -27,10 +21,12 @@ export const Core = ({ children, storage, publicKey, ...options }) => {
     if (!storage) return
 
     const core = new Hypercore(storage, publicKey, options)
-    const onReady = () => setCore(core)
-    core.once('ready', onReady)
+    const onready = () => setCore(core)
+    core.once('ready', onready)
+
     return () => {
-      core.off('ready', onReady)
+      core.off('ready', onready)
+      // + should setCore(null, core close)?
       core.close().catch(safetyCatch)
     }
   }, [storage, publicKey, ...deps])
@@ -63,28 +59,28 @@ export const useCoreEvent = (event, cb) => {
   }, [cb])
 
   useEffect(() => {
-    if (!core || core?.closed) return
+    if (!core || core.closed) return
 
-    const listener = event => fn.current(event)
+    const listener = (a, b, c) => fn.current(a, b, c)
     core.on(event, listener)
-    return () => core.off(event, listener)
-  }, [event, core])
 
-  return { core }
+    return () => core.off(event, listener)
+  }, [core, event])
 }
 
 export const useCoreWatch = (events = EVENTS) => {
   const { core } = useCore()
-  const [, update] = useState(0)
+  const [onwatch, setUpdated] = useState(0)
 
   useEffect(() => {
-    if (!core || core?.closed) return
+    if (!core || core.closed) return
 
-    const onchange = () => update(i => i + 1)
+    const onchange = () => setUpdated(i => i + 1)
     events.forEach(event => core.on(event, onchange))
     onchange()
+
     return () => events.forEach(event => core.off(event, onchange))
   }, [core, events])
 
-  return { core }
+  return { onwatch }
 }

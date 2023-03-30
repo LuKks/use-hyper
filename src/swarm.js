@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, createContext } from 'react'
-import safetyCatch from 'safety-catch'
 import Hyperswarm from 'hyperswarm'
+import safetyCatch from 'safety-catch'
 import { useDHT } from './dht.js'
 
 const SwarmContext = createContext()
@@ -42,36 +42,44 @@ export const useSwarm = () => {
   return context
 }
 
-export const useReplicate = (core, enable = true, deps = []) => {
+export const useReplicate = (core, deps = []) => {
   const { swarm } = useSwarm()
+  const [replicate, setReplicate] = useState(false)
 
   useEffect(() => {
-    if (!enable || !swarm || core?.closed) return
+    if (!swarm || !core || core.closed) return
 
+    let cleanup = false
     let session = null
-    let mounted = true
 
-    const onConnection = socket => {
-      core.replicate(socket)
-    }
+    const onsocket = socket => core.replicate(socket)
+    const ready = core.ready().catch(safetyCatch)
 
-    core.ready().then(() => {
-      if (!mounted) return
+    ready.then(() => {
+      if (cleanup) return
+
       session = swarm.session({ keyPair: swarm.keyPair })
+
+      // + done could be outside of ready
       const done = core.findingPeers()
-      session.on('connection', onConnection)
+      session.on('connection', onsocket)
       session.join(core.discoveryKey, { server: false, client: true })
       session.flush().then(done, done)
+
+      setReplicate(true)
     })
 
     return () => {
-      mounted = false
-      if (!session) return
-      session.off('connection', onConnection)
-      session.leave(core.discoveryKey)
-      session.destroy().catch(safetyCatch) // Run on background
-    }
-  }, [swarm, core, enable, ...deps])
+      cleanup = true
 
-  return { swarm, core }
+      if (!session) return
+
+      session.destroy().catch(safetyCatch) // Run on background
+
+      // + should setReplicate(false, swarm destroy) first?
+      setReplicate(false)
+    }
+  }, [swarm, core, ...deps])
+
+  return { replicate }
 }

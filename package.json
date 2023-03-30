@@ -16,10 +16,6 @@
     "url": "https://github.com/LuKks/use-hyper/issues"
   },
   "homepage": "https://github.com/LuKks/use-hyper",
-  "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
-  },
   "devDependencies": {
     "standard": "^17.0.0"
   },
