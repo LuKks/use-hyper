@@ -23,8 +23,8 @@ If you import `useSwarm` then install this specific branch:\
 
 ```jsx
 import { useCore, useCoreWatch, useCoreEvent } from 'use-hyper/core'
-import { DHT } from 'use-hyper/dht'
-import { Swarm, useReplicate } from 'use-hyper/swarm'
+import { DHT, useDHT } from 'use-hyper/dht'
+import { Swarm, useSwarm, useReplicate } from 'use-hyper/swarm'
 import RAM from 'random-access-memory'
 
 const Child = () => {
