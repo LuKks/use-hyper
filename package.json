@@ -2,7 +2,7 @@
   "name": "use-hyper",
   "version": "0.0.4",
   "description": "React hooks for the hypercore-protocol stack",
-  "main": "./src/index.js",
+  "main": "",
   "scripts": {
     "test": "standard"
   },
