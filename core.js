@@ -59,7 +59,7 @@ export const useCoreEvent = (event, cb) => {
   }, [cb])
 
   useEffect(() => {
-    if (!core || core.closed) return
+    if (!core) return
 
     const listener = (a, b, c) => fn.current(a, b, c)
     core.on(event, listener)
@@ -73,14 +73,18 @@ export const useCoreWatch = (events = EVENTS) => {
   const [onwatch, setUpdated] = useState(0)
 
   useEffect(() => {
-    if (!core || core.closed) return
+    if (!core) return
 
     const onchange = () => setUpdated(i => i + 1)
-    events.forEach(event => core.on(event, onchange))
-    onchange()
 
-    return () => events.forEach(event => core.off(event, onchange))
-  }, [core, events])
+    for (const event of events) core.on(event, onchange)
+    if (events.includes('ready') && core.opened) onchange()
+    if (events.includes('close') && core.closed) onchange()
+
+    return () => {
+      for (const event of events) core.off(event, onchange)
+    }
+  }, [core, ...events])
 
   return { onwatch }
 }
