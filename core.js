@@ -26,7 +26,6 @@ export const Core = ({ children, storage, publicKey, ...options }) => {
 
     return () => {
       core.off('ready', onready)
-      // + should setCore(null, core close)?
       core.close().catch(safetyCatch)
     }
   }, [storage, publicKey, ...deps])
@@ -72,14 +71,32 @@ export const useCoreWatch = (events = EVENTS) => {
   const { core } = useCore()
   const [onwatch, setUpdated] = useState(0)
 
+  const length = useRef(0)
+  const peers = useRef(0)
+
+  useEffect(() => {
+    length.current = 0
+    peers.current = 0
+  }, [core])
+
   useEffect(() => {
     if (!core) return
 
-    const onchange = () => setUpdated(i => i + 1)
+    const onchange = () => {
+      length.current = core.length
+      peers.current = core.peers.length
+
+      setUpdated(i => i + 1)
+    }
 
     for (const event of events) core.on(event, onchange)
+
+    // Try to trigger the initial change
     if (events.includes('ready') && core.opened) onchange()
-    if (events.includes('close') && core.closed) onchange()
+    else if (events.includes('close') && core.closed) onchange()
+    else if (events.includes('append') && length < core.length) onchange()
+    else if (events.includes('peer-add') && peers < core.peers.length) onchange()
+    else if (events.includes('peer-remove') && peers > core.peers.length) onchange()
 
     return () => {
       for (const event of events) core.off(event, onchange)
