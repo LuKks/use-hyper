@@ -11,23 +11,22 @@ const DHT_RELAY_ADDRESS = 'wss://dht1-relay.leet.ar:49443'
 
 const DHTContext = createContext()
 
-export const DHT = ({ children, url, stream, keyPair, ...options }) => {
+export const DHT = ({ children, url, keyPair, ...options }) => {
   const [dht, setDHT] = useState(null)
 
   useEffect(() => {
-    let ws
-
-    if (!stream) {
-      ws = new window.WebSocket(url || DHT_RELAY_ADDRESS)
-      stream = new Stream(true, ws)
-    }
+    const ws = new window.WebSocket(url || DHT_RELAY_ADDRESS)
+    const stream = new Stream(true, ws)
 
     keyPair = keyPair || DHTRelay.keyPair(primaryKey)
-    const dht = new DHTRelay(stream, { keyPair, ...options })
-    setDHT(dht)
 
-    return () => dht.destroy().catch(safetyCatch)
-  }, [stream, keyPair])
+    const relay = new DHTRelay(stream, { keyPair, ...options })
+    setDHT(relay)
+
+    return () => {
+      relay.destroy().catch(safetyCatch)
+    }
+  }, [keyPair])
 
   return React.createElement(
     DHTContext.Provider,
