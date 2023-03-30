@@ -44,7 +44,6 @@ export const useSwarm = () => {
 
 export const useReplicate = (core, deps = []) => {
   const { swarm } = useSwarm()
-  const [replicate, setReplicate] = useState(false)
 
   useEffect(() => {
     if (!swarm || !core || core.closed) return
@@ -65,8 +64,6 @@ export const useReplicate = (core, deps = []) => {
       session.on('connection', onsocket)
       session.join(core.discoveryKey, { server: false, client: true })
       session.flush().then(done, done)
-
-      setReplicate(true)
     })
 
     return () => {
@@ -75,11 +72,6 @@ export const useReplicate = (core, deps = []) => {
       if (!session) return
 
       session.destroy().catch(safetyCatch) // Run on background
-
-      // + should setReplicate(false, swarm destroy) first?
-      setReplicate(false)
     }
   }, [swarm, core, ...deps])
-
-  return { replicate }
 }
